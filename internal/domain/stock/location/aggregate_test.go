@@ -38,6 +38,37 @@ func TestNewAggregate(t *testing.T) {
 	}
 }
 
+func TestRestoreAggregate(t *testing.T) {
+	t.Parallel()
+
+	// Given
+	id, err := location.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := location.NewName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	a := location.RestoreAggregate(id, name, false)
+
+	// Then
+	if a.Id != id {
+		t.Errorf("%T %+v want %+v", a.Id, a.Id, id)
+	}
+
+	if a.Name != name {
+		t.Errorf("%T %+v want %+v", a.Name, a.Name, name)
+	}
+
+	if a.IsDeleted() != false {
+		t.Errorf("%T %+v want %+v", a.IsDeleted(), a.IsDeleted(), false)
+	}
+}
+
 func TestDelete(t *testing.T) {
 	t.Parallel()
 

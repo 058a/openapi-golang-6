@@ -63,13 +63,13 @@
 				
 				<option value="file3">openapi/internal/app/stock/location/update.go (100.0%)</option>
 				
-				<option value="file4">openapi/internal/domain/stock/location/aggregate.go (75.0%)</option>
+				<option value="file4">openapi/internal/domain/stock/location/aggregate.go (100.0%)</option>
 				
 				<option value="file5">openapi/internal/domain/stock/location/entity.go (100.0%)</option>
 				
 				<option value="file6">openapi/internal/domain/stock/location/value.go (100.0%)</option>
 				
-				<option value="file7">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (80.0%)</option>
+				<option value="file7">openapi/internal/infra/repository/sqlboiler/stock/location/repository.go (100.0%)</option>
 				
 				<option value="file8">openapi/internal/ui/hello/get.go (0.0%)</option>
 				
@@ -270,7 +270,7 @@ func NewAggregate(id Id, name Name) *Aggregate <span class="cov8" title="1">{
         }
 }</span>
 
-func RestoreAggregate(id Id, name Name, deleted bool) *Aggregate <span class="cov0" title="0">{
+func RestoreAggregate(id Id, name Name, deleted bool) *Aggregate <span class="cov8" title="1">{
         return &amp;Aggregate{
                 Id:      id,
                 Name:    name,
@@ -354,7 +354,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sql.DB) (*Repository, error) <span class="cov8" title="1">{
-        if db == nil </span><span class="cov0" title="0">{
+        if db == nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("NewRepository: db is nil")
         }</span>
         <span class="cov8" title="1">return &amp;Repository{
@@ -377,7 +377,7 @@ func (r *Repository) Save(a *location.Aggregate) error <span class="cov8" title=
                 boil.Whitelist("name", "deleted"),
                 boil.Infer(),
         )
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return err
         }</span>
 
@@ -391,7 +391,7 @@ func (r *Repository) Get(id location.Id) (*location.Aggregate, error) <span clas
         }</span>
 
         <span class="cov8" title="1">name, err := location.NewName(data.Name)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return &amp;location.Aggregate{}, err
         }</span>
 
@@ -402,7 +402,7 @@ func (r *Repository) Get(id location.Id) (*location.Aggregate, error) <span clas
 
 func (r *Repository) Find(id location.Id) (bool, error) <span class="cov8" title="1">{
         found, err := sqlboiler.StockLocationExists(context.Background(), r.db, id.String())
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return false, err
         }</span>
 

@@ -2,6 +2,7 @@ package location_test
 
 import (
 	"context"
+
 	"reflect"
 	"testing"
 	"time"
@@ -12,7 +13,80 @@ import (
 	"openapi/internal/infra/sqlboiler"
 
 	"github.com/google/uuid"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
+
+func TestNewRepository(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	// When
+	r, err := sut.NewRepository(db)
+
+	// Then
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if r == nil {
+		t.Fatal("repository must not be nil")
+	}
+}
+
+func TestNewRepositoryFail(t *testing.T) {
+	t.Parallel()
+
+	// When
+	_, err := sut.NewRepository(nil)
+
+	// Then
+	if err == nil {
+		t.Fatal("error must not be nil")
+	}
+}
+
+func TestSaveFailInvalidDb(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	db.Close()
+
+	r, err := sut.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	id, err := location.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := location.NewName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a := location.NewAggregate(id, name)
+
+	// When
+	err = r.Save(a)
+
+	// Then
+	if err == nil {
+		t.Fatal("error must not be nil")
+	}
+}
 
 func TestCreate(t *testing.T) {
 	t.Parallel()
@@ -175,6 +249,64 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
+func TestGetFailInvalidData(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r, err := sut.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	id, err := location.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	name, err := location.NewName("test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	a := location.NewAggregate(id, name)
+
+	if err := r.Save(a); err != nil {
+		t.Fatal(err)
+	}
+
+	data := &sqlboiler.StockLocation{
+		ID:      a.Id.String(),
+		Name:    "",
+		Deleted: a.IsDeleted(),
+	}
+
+	if err := data.Upsert(
+		context.Background(),
+		db,
+		true,
+		[]string{"id"},
+		boil.Whitelist("name", "deleted"),
+		boil.Infer(),
+	); err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	_, err = r.Get(id)
+
+	// Then
+	if err == nil {
+		t.Fatalf("error must not be nil")
+	}
+
+}
+
 func TestFind(t *testing.T) {
 	t.Parallel()
 
@@ -225,5 +357,35 @@ func TestFind(t *testing.T) {
 
 	if found != true {
 		t.Errorf("%T %+v want %+v", found, found, true)
+	}
+}
+
+func TestFindFail(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	db.Close()
+
+	r, err := sut.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	id, err := location.NewId(uuid.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// When
+	_, err = r.Find(id)
+
+	// Then
+	if err == nil {
+		t.Fatalf("error must not be nil")
 	}
 }
