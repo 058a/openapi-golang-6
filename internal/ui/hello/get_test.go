@@ -13,6 +13,8 @@ import (
 )
 
 func TestGetSuccess(t *testing.T) {
+	t.Parallel()
+
 	res, err := http.Get(env.GetServiceUrl() + "/hello")
 	if err != nil {
 		t.Fatal(err)

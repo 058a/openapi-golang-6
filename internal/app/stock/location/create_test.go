@@ -1,12 +1,15 @@
 package location_test
 
 import (
-	"openapi/internal/app/stock/location"
+	"fmt"
+	app "openapi/internal/app/stock/location"
 	domain "openapi/internal/domain/stock/location"
 	"openapi/internal/infra/database"
+	mock "openapi/internal/infra/mock/domain/stock/location"
 	infra "openapi/internal/infra/repository/sqlboiler/stock/location"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 )
 
@@ -29,12 +32,12 @@ func TestCreate(t *testing.T) {
 	}
 
 	// Given
-	reqDto := &location.CreateRequestDto{
+	reqDto := &app.CreateRequestDto{
 		Name: "TestName" + uuid.NewString(),
 	}
 
 	// When
-	resDto, err := location.Create(reqDto, repository)
+	resDto, err := app.Create(reqDto, repository, uuid.New())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,5 +55,87 @@ func TestCreate(t *testing.T) {
 
 	if a.Name.String() != reqDto.Name {
 		t.Errorf("%T = %v, want %v", a.Name.String(), a.Name.String(), reqDto.Name)
+	}
+}
+
+func TestCreateFailInvalidName(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	repository, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	reqDto := &app.CreateRequestDto{
+		Name: "",
+	}
+
+	// When
+	_, err = app.Create(reqDto, repository, uuid.New())
+
+	// Then
+	if err == nil {
+		t.Fatalf("error must not be nil")
+	}
+}
+
+func TestCreateFailInvalidId(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	db, err := database.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	repository, err := infra.NewRepository(db)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Given
+	reqDto := &app.CreateRequestDto{
+		Name: "TestName" + uuid.NewString(),
+	}
+
+	// When
+	_, err = app.Create(reqDto, repository, uuid.Nil)
+
+	// Then
+	if err == nil {
+		t.Fatalf("error must not be nil")
+	}
+}
+
+func TestCreateFailSave(t *testing.T) {
+	t.Parallel()
+
+	// Setup
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repository := mock.NewMockIRepository(ctrl)
+	repository.EXPECT().Save(gomock.Any()).Return(fmt.Errorf("fail save"))
+
+	// Given
+	reqDto := &app.CreateRequestDto{
+		Name: "TestName" + uuid.NewString(),
+	}
+
+	// When
+	_, err := app.Create(reqDto, repository, uuid.New())
+
+	// Then
+	if err == nil {
+		t.Fatalf("error must not be nil")
 	}
 }

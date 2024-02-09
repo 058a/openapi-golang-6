@@ -15,7 +15,7 @@ type CreateResponseDto struct {
 	Name string
 }
 
-func Create(req *CreateRequestDto, r location.IRepository) (*CreateResponseDto, error) {
+func Create(req *CreateRequestDto, r location.IRepository, newId uuid.UUID) (*CreateResponseDto, error) {
 	// Precondition
 	name, err := location.NewName(req.Name)
 	if err != nil {
@@ -23,7 +23,7 @@ func Create(req *CreateRequestDto, r location.IRepository) (*CreateResponseDto, 
 	}
 
 	// Main
-	id, err := location.NewId(uuid.New())
+	id, err := location.NewId(newId)
 	if err != nil {
 		return nil, err
 	}

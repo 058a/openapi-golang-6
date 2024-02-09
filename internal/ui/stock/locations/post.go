@@ -3,6 +3,7 @@ package locations
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 
 	app "openapi/internal/app/stock/location"
@@ -40,7 +41,7 @@ func PostStockLocation(ctx echo.Context) error {
 	reqDto := &app.CreateRequestDto{
 		Name: req.Name,
 	}
-	resDto, err := app.Create(reqDto, repository)
+	resDto, err := app.Create(reqDto, repository, uuid.New())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
