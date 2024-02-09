@@ -8,7 +8,7 @@ import (
 
 func TestNewName(t *testing.T) {
 	t.Parallel()
-	
+
 	// When
 	value := "test"
 	name, err := location.NewName(value)

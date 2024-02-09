@@ -1,23 +1,23 @@
 package location
 
 type Aggregate struct {
-	Id   		Id
-	Name 		Name
+	Id      Id
+	Name    Name
 	deleted bool
 }
 
 func NewAggregate(id Id, name Name) *Aggregate {
 	return &Aggregate{
-		Id:   id,
-		Name: name,
+		Id:      id,
+		Name:    name,
 		deleted: false,
 	}
 }
 
 func RestoreAggregate(id Id, name Name, deleted bool) *Aggregate {
 	return &Aggregate{
-		Id:   id,
-		Name: name,
+		Id:      id,
+		Name:    name,
 		deleted: deleted,
 	}
 }

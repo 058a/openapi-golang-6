@@ -28,7 +28,6 @@ func TestNewId(t *testing.T) {
 	}
 }
 
-
 func TestNewIdFail(t *testing.T) {
 	t.Parallel()
 
