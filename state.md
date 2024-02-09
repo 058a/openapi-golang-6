@@ -1,9 +1,9 @@
 ```mermaid
 stateDiagram-v2
-    [*] --> Wait
-    Wait --> Do
-    Stop --> Do
-    Do --> Stop
-    Do --> [*]
-    Stop --> [*]
+    [*] --> Wait: Start
+    Wait --> Do: Start processing
+    Stop --> Do: Restart processing
+    Do --> Stop: Pause processing
+    Do --> [*]: Finish processing
+    Stop --> [*]: Finish processing
 ```
