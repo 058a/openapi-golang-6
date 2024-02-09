@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	hello "openapi/internal/presentation/hello"
-	stock "openapi/internal/presentation/stock"
+	hello "openapi/internal/ui/hello"
+	stock "openapi/internal/ui/stock"
 )
 
 type CustomValidator struct {
