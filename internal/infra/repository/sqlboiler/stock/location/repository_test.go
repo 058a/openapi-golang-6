@@ -304,7 +304,6 @@ func TestGetFailInvalidData(t *testing.T) {
 	if err == nil {
 		t.Fatalf("error must not be nil")
 	}
-
 }
 
 func TestFind(t *testing.T) {
